@@ -34,6 +34,4 @@ template\uart_communicate.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_t
 template\uart_communicate.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 template\uart_communicate.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 template\uart_communicate.o: ../Inc/usart.h
-template\uart_communicate.o: C:\Keil_v5\ARM\ARMCC\bin\..\include\stdlib.h
-template\uart_communicate.o: C:\Keil_v5\ARM\ARMCC\bin\..\include\string.h
 template\uart_communicate.o: C:\Keil_v5\ARM\ARMCC\bin\..\include\stdio.h

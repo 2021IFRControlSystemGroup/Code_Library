@@ -23,8 +23,8 @@
 		#define WATCHDOG_ENABLE 1
 	#endif
 
-	#ifndef MOTOR_SYSTEM_USER_ROOT																	//修改函数权限
-		#define MOTOR_SYSTEM_USER_ROOT 0
+	#ifndef USER_ROOT																	//修改函数权限
+		#define USER_ROOT 0
 	#endif
 
 	//----------------------------------------------------------------------------------------------//
@@ -75,7 +75,7 @@
 				_Header.RTR=_RTR;_Header.StdId=_StdId;\
 				_Header.StdId=_ExtId;_Header.TransmitGlobalTime=DISABLE;
 	
-	#if MOTOR_SYSTEM_USER_ROOT 
+	#if USER_ROOT 
 		weak void CAN_Start_IT(CAN_HandleTypeDef *hcan);																																											//CAN过滤器与中断配置
 		weak void Can_TxMessage_Init(Can_TxMessageTypeDef* TxMessage,CAN_HandleTypeDef *hcan,uint32_t DLC,uint32_t IDE,uint32_t RTR,uint32_t StdId,uint32_t ExtId);	//CAN_TxMessage参数初始化函数
 		weak void PID_Init(PID *pid, float Kp, float Ki, float Kd, float error_max, float dead_line, float intergral_max, float output_max);	//PID参数初始化函数
@@ -98,6 +98,7 @@
 		{
 			WORKING,																	//正常工作
 			MISSING,																	//丢失
+			SUSPENDING																//挂起
 		}SystemState;
 
 		typedef struct Protect_System								//系统看门狗结构体
@@ -107,7 +108,7 @@
 		}Protect_System;
 		
 		#define WATCHDOG_TIME_MAX 300																								//看门狗总时长
-		#if MOTOR_SYSTEM_USER_ROOT
+		#if USER_ROOT
 			weak void Feed_WatchDog(Protect_System* Dogs);														//看门狗喂狗函数
 			weak void SystemState_Set(Protect_System* Dogs,SystemState State);				//系统状态切换函数
 			weak uint8_t System_Check(Protect_System* Dogs);													//系统状态检测函数
@@ -146,13 +147,13 @@
 			Can_TxMessageTypeDef* TxMessage;					//CAN发送消息指针
 		}Motor_System;
 		
-		#if MOTOR_SYSTEM_USER_ROOT
+		#if USER_ROOT
 			weak void Motor_System_Init(Motor_System* P_Motor,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage);		//全系统控制初始化函数
-			weak void Motor_System_Analysis(Motor_Info* P_Motor,uint8_t* RX_Data);																		//全系统控制电机数据分析函数
+			weak void Motor_Info_Analysis(Motor_Info* P_Motor,uint8_t* RX_Data);																		//全系统控制电机数据分析函数
 			weak void Motor_Extra_Analysis(Motor_Info* P_Motor);																										//全系统控制PID计算函数
 		#else
 			void Motor_System_Init(Motor_System* P_Motor,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage);				//全系统控制初始化函数
-			void Motor_System_Analysis(Motor_Info* P_Motor,uint8_t* RX_Data);																					//全系统控制电机数据分析函数
+			void Motor_Info_Analysis(Motor_Info* P_Motor,uint8_t* RX_Data);																					//全系统控制电机数据分析函数
 			void Motor_Extra_Analysis(Motor_Info* P_Motor);																													//全系统控制PID计算函数
 		#endif
 	#endif
@@ -184,7 +185,7 @@
 			Can_TxMessageTypeDef* TxMessage;					//CAN发送消息指针
 		}Pos_System;
 
-		#if MOTOR_SYSTEM_USER_ROOT 
+		#if USER_ROOT 
 			weak void Pos_System_Init(Pos_System* P_Pos,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage);			//位置环控制系统初始化函数
 			weak void Pos_System_Analysis(Motor_Pos_Info* P_Pos,uint8_t* RX_Data);															//位置环控制系统数据分析函数
 			weak void PID_Pos_Cal(Pos_System* Pos_Motor);																												//位置环控制系统PID计算函数
@@ -217,21 +218,17 @@
 			Can_TxMessageTypeDef* TxMessage;					//CAN发送消息指针
 		}Speed_System;
 		
-		#if MOTOR_SYSTEM_USER_ROOT 
+		#if USER_ROOT 
 			weak void Speed_System_Init(Speed_System* P_Speed,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage);	//速度环控制系统初始化函数
-			weak void Speed_System_Analysis(Motor_Speed_Info* Motor,uint8_t* RX_Data);															//速度环电机数据分析的操作函数
+			weak void Speed_Info_Analysis(Motor_Speed_Info* Motor,uint8_t* RX_Data);															//速度环电机数据分析的操作函数
 			weak void PID_Speed_Cal(Speed_System* Speed_Motor);																										//速度环系统PID计算函数
 		#else
 			void Speed_System_Init(Speed_System* P_Speed,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage);			//速度环控制系统初始化函数
-			void Speed_System_Analysis(Motor_Speed_Info* Motor,uint8_t* RX_Data);																		//速度环电机数据分析的操作函数
+			void Speed_Info_Analysis(Motor_Speed_Info* Motor,uint8_t* RX_Data);																		//速度环电机数据分析的操作函数
 			void PID_Speed_Cal(Speed_System* Speed_Motor);																												//速度环系统PID计算函数
 		#endif
 	#endif
 	//----------------------------------------------------------------------------------------------//
-		
-	//---------------------------------------对外接口----------------------------------------------//
-	extern Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
-	//---------------------------------------------------------------------------------------------//
 	
 	//---------------------------------------用户自定义功能区---------------------------------------//
 	//E.G.

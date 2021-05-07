@@ -41,6 +41,8 @@
 Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 //--------------------------------//
 
+//---------外部变量声明部分-------//
+//--------------------------------//
 #ifdef __MOTOR_SYSTEM_H__
 		//--------------------------------------------------------------------------------------------------//
 		//函数名称:
@@ -54,9 +56,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		CAN_HandleTypeDef* hcan 	指向CAN号的指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void CAN_Start_IT(CAN_HandleTypeDef *hcan)
 		{
 			CAN_FilterTypeDef CAN_Filter;
@@ -100,9 +99,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		float output_max			输出最大值
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void PID_Init(PID *pid, float Kp, float Ki, float Kd, float error_max, float dead_line, float intergral_max, float output_max)
 		{
 			pid->Kp = Kp;
@@ -138,9 +134,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		uint32_t ExtId										CAN拓展标识符位
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Can_TxMessage_Init(Can_TxMessageTypeDef* TxMessage,CAN_HandleTypeDef *hcan,uint32_t DLC,uint32_t IDE,uint32_t RTR,uint32_t StdId,uint32_t ExtId)
 		{
 			TxMessage->Hcan=hcan;
@@ -161,9 +154,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		float tarV 	目标值
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void PID_General_Cal(PID *pid, float fdbV, float tarV)
 		{
 			pid->error =  tarV - fdbV;
@@ -205,9 +195,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		uint8_t* Tx_Data	目标数组
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Add_TxMessage(float Output,uint8_t* Tx_Data)
 		{
 			Tx_Data[0]=((int16_t)Output>>8)&0xff;
@@ -225,9 +212,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Can_TxMessageTypeDef* TxMessage		指向CAN发送消息结构体指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void CAN_Send(Can_TxMessageTypeDef* TxMessage)
 		{
 			uint32_t TxMailbox;
@@ -252,9 +236,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		SystemState State			系统状态值
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void SystemState_Set(Protect_System* Dogs,SystemState State)
 		{
 			Dogs->State=State;
@@ -271,9 +252,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Protect_System* Dogs	系统内的看门狗结构体指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Feed_WatchDog(Protect_System* Dogs)
 		{
 			Dogs->Count_Time=0;
@@ -291,16 +269,13 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Protect_System* Dogs	系统内的看门狗结构体指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		uint8_t System_Check(Protect_System* Dogs)
 		{
 			if(Dogs->Count_Time<WATCHDOG_TIME_MAX)
 			{
 				Dogs->Count_Time++;
 				return 0;
-			}SystemState_Set(Dogs,MISSING);
+			}else SystemState_Set(Dogs,MISSING);
 			return 1;
 		}
 #endif
@@ -318,15 +293,10 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Can_TxMessageTypeDef* TxMessage 	指向CAN发送消息的指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Motor_System_Init(Motor_System* P_Motor,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage)
 		{
 			P_Motor->TxMessage=TxMessage;
 			P_Motor->Motor_Num=Motor_Num;
-			P_Motor->Protect.Count_Time=0;	
-			SystemState_Set(&P_Motor->Protect,WORKING);
 		}
 		
 		//--------------------------------------------------------------------------------------------------//
@@ -351,9 +321,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		uint8_t* RX_Data 			保存电机信息的数组
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Motor_System_Analysis(Motor_Info* P_Motor,uint8_t* RX_Data)
 		{
 			//数据解析
@@ -375,9 +342,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Motor_Info* P_Motor 	指向全系统电机信息指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Motor_Extra_Analysis(Motor_Info* P_Motor)
 		{
 			 //绝对角度计算
@@ -409,15 +373,10 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Can_TxMessageTypeDef* TxMessage 	指向CAN发送消息的指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Pos_System_Init(Pos_System* P_Pos,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage)
 		{
 			P_Pos->TxMessage=TxMessage;
 			P_Pos->Motor_Num=Motor_Num;
-			P_Pos->Protect.Count_Time=0;
-			SystemState_Set(&P_Pos->Protect,WORKING);
 		}
 		
 		//--------------------------------------------------------------------------------------------------//
@@ -441,9 +400,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		uint8_t* RX_Data 				保存电机信息的数组
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Pos_System_Analysis(Motor_Pos_Info* P_Pos,uint8_t* RX_Data)
 		{
 			//数据解析
@@ -477,9 +433,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Pos_System* P_Pos 	位置环系统指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void PID_Pos_Cal(Pos_System* P_Pos)
 		{
 			P_Pos->Pos_PID.error =  P_Pos->Tar_Pos - P_Pos->Info.Abs_Angle;
@@ -550,15 +503,10 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Can_TxMessageTypeDef* TxMessage 	指向CAN发送消息指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Speed_System_Init(Speed_System* P_Speed,uint8_t Motor_Num,Can_TxMessageTypeDef* TxMessage)
 		{
 			P_Speed->TxMessage=TxMessage;
 			P_Speed->Motor_Num=Motor_Num;
-			P_Speed->Protect.Count_Time=0;
-			SystemState_Set(&P_Speed->Protect,WORKING);
 		}
 		
 		//--------------------------------------------------------------------------------------------------//
@@ -584,9 +532,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//移植建议:
 		//		大框架不需要改, 要改的话, 信息解析的地方根据通信协议来改就行.
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void Speed_System_Analysis(Motor_Speed_Info* P_Speed,uint8_t* RX_Data)
 		{
 			P_Speed->Speed=(uint16_t)RX_Data[2]<<8|RX_Data[3];
@@ -605,9 +550,6 @@ Can_TxMessageTypeDef Can_TxMessageList[CAN_TXMESSAGEINDEXMAX];
 		//		Speed_System* 	速度环系统指针
 		//
 		//--------------------------------------------------------------------------------------------------//
-		#if MOTOR_SYSTEM_USER_ROOT 
-			weak
-		#endif
 		void PID_Speed_Cal(Speed_System* P_Speed)
 		{
 			P_Speed->Speed_PID.error =  P_Speed->Tar_Speed - P_Speed->Info.Speed;
